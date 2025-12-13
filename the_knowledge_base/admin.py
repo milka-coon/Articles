@@ -30,7 +30,7 @@ class ArticleAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title', 'content', 'is_published', 'category__name')
+            'fields': ('title', 'content', 'is_published', 'category')
         }),
         ('Даты', {
             'fields': ('created_at', 'updated_at'),
@@ -62,7 +62,7 @@ class ArticleAdmin(admin.ModelAdmin):
         if obj.category: 
             return obj.category.name 
         else:
-            return 'не указано'
+            return 'не указан'
     name_display.short_description = 'Категория'
     
 

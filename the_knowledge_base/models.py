@@ -14,11 +14,6 @@ class Category(models.Model):
         verbose_name='URL-идентификатор',
         help_text='Уникальная часть URL (например, "programming-tips")'
     )
-    description = models.TextField(
-        blank=True, 
-        verbose_name='Описание категории',
-        help_text='Необязательное описание категории'
-    )
     created_at = models.DateTimeField(
         auto_now_add=True, 
         verbose_name='Дата создания'
