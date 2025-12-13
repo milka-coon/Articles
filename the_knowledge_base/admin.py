@@ -9,25 +9,28 @@ class ArticleAdmin(admin.ModelAdmin):
         'short_content_display', 
         'created_at_formatted', 
         'updated_at_formatted', 
-        'is_published'
+        'is_published',
+        'name_display'
     )
     
     list_filter = (
         'is_published',
         'created_at',
         'updated_at',
+        'category__name'
     )
     
     search_fields = (
         'title',
         'content',
+        'category__name'
     )
     
     list_editable = ('is_published',)
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title', 'content', 'is_published')
+            'fields': ('title', 'content', 'is_published', 'category__name')
         }),
         ('Даты', {
             'fields': ('created_at', 'updated_at'),
@@ -53,6 +56,16 @@ class ArticleAdmin(admin.ModelAdmin):
     
     # Поиск по дате
     date_hierarchy = 'created_at'
+    
+    #Отображение categories
+    def name_display(self, obj):
+        if obj.category: 
+            return obj.category.name 
+        else:
+            return 'не указано'
+    name_display.short_description = 'Категория'
+    
+
 
 
 admin.site.register(Article, ArticleAdmin)
