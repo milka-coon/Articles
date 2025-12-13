@@ -1,9 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.contrib import messages
 from .models import Article
+from difflib import SequenceMatcher
 
 
 class ArticleAdmin(admin.ModelAdmin):
+    
+    actions = ['find_similar_articles']
+    
     list_display = (
         'title', 
         'short_content_display', 
@@ -64,6 +69,40 @@ class ArticleAdmin(admin.ModelAdmin):
         else:
             return 'не указан'
     name_display.short_description = 'Категория'
+    
+    @staticmethod
+    def similarity(a: str, b: str) -> float:
+        return SequenceMatcher(None, a.lower(), b.lower()).ratio()
+    
+    @admin.action(description='Поиск похожих статей')
+    def find_similar_articles(self, request, queryset):
+        if queryset.count() != 1:
+            messages.error(request, 'Выберите ровно одну статью для поиска одинаковых')
+            return
+        
+        article = queryset.first()
+        sim_ratio = 0.8
+        duplicates = []
+        
+        for art in Article.objects.exclude(pk = article.id): #exclude исключает указанный элемент
+            title_score = self.similarity(article.title, art.title)
+            content_score = self.similarity(article.content, art.content)
+            
+            if title_score >= sim_ratio or content_score >= sim_ratio:
+                duplicates.append(art)
+            
+        if not duplicates:
+            messages.info(request, 'Совпадений не найдено')
+            return
+        
+        msg = 'Найденные совпадения:\n'
+        for art in duplicates:
+            msg += f'{art.title}, \n' 
+        
+        msg = msg[:-1]
+        messages.warning(request, msg)            
+            
+        
     
 
 

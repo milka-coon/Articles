@@ -95,3 +95,7 @@ class Article(models.Model):
     def short_content(self):
         """Краткое описание статьи"""
         return self.content[:101]
+    
+    def get_admin_url(self):
+        """Получение URL для редактирования статьи в админке"""
+        return reverse('admin:appname_article_change', args=[self.id])
